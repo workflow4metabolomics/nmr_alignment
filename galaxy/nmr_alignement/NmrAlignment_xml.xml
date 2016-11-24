@@ -1,19 +1,19 @@
 <tool id="NmrAlignment" name="NMR_Alignment" version="2016-10-07">
 
-	<description> Alignment of NMR spectra based on the Cluster-based Peak Alignment (CluPA) algorithm </description>
-    
-	<requirements>
-        <requirement type="package" version="3.1.2">R</requirement>
-	    <requirement type="package" version="1.1_4">r-batch</requirement>
-	    <requirement type="package" version="1.2.1">r-speaq</requirement>
-	</requirements>
-    
+	 <description> Alignment of NMR spectra based on the Cluster-based Peak Alignment (CluPA) algorithm </description>
+
+	 <requirements>
+       <requirement type="package" version="3.1.2">R</requirement>
+	     <requirement type="package" version="1.1_4">r-batch</requirement>
+	     <requirement type="package" version="1.2.1">r-speaq</requirement>
+  	</requirements>
+
     <stdio>
         <exit_code range="1:" level="fatal" />
     </stdio>
-    
-	<command interpreter="Rscript">
-		## Wrapper		
+
+  	<command>
+		## Wrapper
         Rscript $__tool_directory__/NmrAlignment_wrapper.R
 
 		## File input
@@ -26,8 +26,8 @@
 		## Spectra borders
 		left_border $left_border
 		right_border $right_border
-		
-		
+
+
 		## Exclusion zone
 		zone_exclusion_choices.choice ${zone_exclusion_choices.choice}
 		#if str($zone_exclusion_choices.choice) == 'yes':
@@ -45,14 +45,14 @@
 
 		## Intensity threshold
 		baselineThresh $baselineThresh
-		
+
 		## Outputs
 		logOut $logOut
 		alignedSpectra $alignedSpectra
 		graphOut $graphOut
-	</command>
-    
-	<inputs>
+	  </command>
+
+  	<inputs>
         <conditional name="inputs">
             <param name="input" type="select" label="Choose your inputs method" >
                 <option value="zip_file" selected="true">Zip file from your history containing your Bruker directories</option>
@@ -63,11 +63,11 @@
             </when>
             <when value="lib">
                 <param name="library" type="text" size="40" label="Library directory name" help="The name of your directory containing all your data" >
-                    <validator type="empty_field"/> 
+                    <validator type="empty_field"/>
                 </param>
             </when>
         </conditional>
-		
+
 		<param name="left_border" label="Left Border" type="float" value="10.0" size="10" help="Default value is 10 ppm"/>
 		<param name="right_border" label="Right Border" type="float" value="0.5" size="10" help="Default value is 0.5 ppm"/>
 
@@ -82,12 +82,13 @@
 					<param name="zone_exclusion_right" label="Right exclusion zone border" type="float" value="10.0" />
 				</repeat>
 			</when>
+      <when value="no" />
 		</conditional>
 
 		<param name="reference" type="integer" value="0" help="Number of the reference spectrum. Default value is 0: automatic determination of the reference spectrum" />
 
 		<param name="nDivRange" type="integer" value="64" help="Size of a single small segment after division of spectra. Default value is 64" />
-		
+
 		<param name="baselineThresh" type="integer" value="1" help="Threshold to remove all peaks with intensity lower this value. Default value is 1" />
 
 	</inputs>
@@ -98,12 +99,8 @@
 		<data format="pdf" name="graphOut" label="${tool.name}_graph" />
 	</outputs>
 
- 	<stdio>
-	     <exit_code range="1:" level="fatal" />
-	</stdio>
-
 	<help>
-	
+
 .. class:: infomark
 
 **Authors** Marie Tremblay-Franco (marie.tremblay-franco@toulouse.inra.fr)
@@ -125,7 +122,7 @@ Description
 -----------
 
 Nuclear Magnetic Resonance Spectrum Alignment based on the Cluster-based Peak Alignment (CluPA) algorithm from the R 'speak' package
- 
+
 -----------------
 Workflow position
 -----------------
@@ -133,9 +130,9 @@ Workflow position
 **Upstream tools**
 
 ========================= ================= =======
-Name                      output file       format 
+Name                      output file       format
 ========================= ================= =======
-NA                        NA                NA     
+NA                        NA                NA
 ========================= ================= =======
 
 
@@ -209,7 +206,7 @@ Left exclusion zone
 Right exclusion zone
 	| Lower boundary of exclusion zone
 
-| *Notes:* 
+| *Notes:*
 | - these parameters can be used several times using the "Add new exclusion zones" button
 |
 
@@ -227,12 +224,12 @@ Intensity threshold
 	| All peaks with an intensity below this threshold are removed
 	| Default value: 1
 	|
-		
+
 
 ------------
 Output files
 ------------
-		
+
 alignedSpectra.tsv
 	| tabular output
 	| Data matrix with p rows (ppm) and n columns (samples) containing the aligned intensities
@@ -254,6 +251,8 @@ Example
         :width: 500
 
    </help>
-   
-</tool>
+   <citations>
+       <citation type="doi">10.1093/bioinformatics/btu813</citation>
+   </citations>
 
+</tool>
