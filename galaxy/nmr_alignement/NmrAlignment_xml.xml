@@ -1,32 +1,27 @@
-<tool id="NmrAlignment" name="NMR_Alignment" version="2016-10-07">
-
-	 <description> Alignment of NMR spectra based on the Cluster-based Peak Alignment (CluPA) algorithm </description>
-
+<tool id="NmrAlignment" name="NMR spectra alignment" version="2016-10-07">
+	<description>based on the Cluster-based Peak Alignment (CluPA) algorithm</description>
 	 <requirements>
-       <requirement type="package" version="3.1.2">R</requirement>
-	     <requirement type="package" version="1.1_4">r-batch</requirement>
-	     <requirement type="package" version="1.2.1">r-speaq</requirement>
+        <requirement type="package" version="3.1.2">R</requirement>
+	    <requirement type="package" version="1.1_4">r-batch</requirement>
+	    <requirement type="package" version="1.2.1">r-speaq</requirement>
   	</requirements>
-
     <stdio>
         <exit_code range="1:" level="fatal" />
     </stdio>
-
   	<command>
 		## Wrapper
-        Rscript $__tool_directory__/NmrAlignment_wrapper.R
+        Rscript '$__tool_directory__/NmrAlignment_wrapper.R'
 
 		## File input
         #if $inputs.input == "lib":
-            library $__app__.config.user_library_import_dir/$__user_email__/$inputs.library
+            library '$__app__.config.user_library_import_dir/$__user_email__/$inputs.library'
         #elif $inputs.input == "zip_file":
-            zipfile $inputs.zip_file
+            zipfile '$inputs.zip_file'
         #end if
 
 		## Spectra borders
 		left_border $left_border
 		right_border $right_border
-
 
 		## Exclusion zone
 		zone_exclusion_choices.choice ${zone_exclusion_choices.choice}
@@ -47,11 +42,10 @@
 		baselineThresh $baselineThresh
 
 		## Outputs
-		logOut $logOut
-		alignedSpectra $alignedSpectra
-		graphOut $graphOut
-	  </command>
-
+		logOut '$logOut'
+		alignedSpectra '$alignedSpectra'
+		graphOut '$graphOut'
+	</command>
   	<inputs>
         <conditional name="inputs">
             <param name="input" type="select" label="Choose your inputs method" >
@@ -84,13 +78,9 @@
 			</when>
       <when value="no" />
 		</conditional>
-
 		<param name="reference" type="integer" value="0" help="Number of the reference spectrum. Default value is 0: automatic determination of the reference spectrum" />
-
 		<param name="nDivRange" type="integer" value="64" help="Size of a single small segment after division of spectra. Default value is 64" />
-
 		<param name="baselineThresh" type="integer" value="1" help="Threshold to remove all peaks with intensity lower this value. Default value is 1" />
-
 	</inputs>
 
 	<outputs>
@@ -254,5 +244,4 @@ Example
    <citations>
        <citation type="doi">10.1093/bioinformatics/btu813</citation>
    </citations>
-
 </tool>
