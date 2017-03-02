@@ -1,4 +1,4 @@
-<tool id="NmrAlignment" name="NMR spectra alignment" version="2016-10-07">
+<tool id="NmrAlignment" name="NMR spectra alignment" version="2.0.1">
 	<description>based on the Cluster-based Peak Alignment (CluPA) algorithm</description>
 	 <requirements>
         <requirement type="package" version="3.1.2">R</requirement>
