@@ -57,16 +57,21 @@ if(!runExampleL)
 	# Inputs
 		## Library of spectra to align
 if (!is.null(argLs[["zipfile"]])){
+	fileType="zip"
 	zipfile= argLs[["zipfile"]]
 	directory=unzip(zipfile, list=F)
 	directory=paste(getwd(),strsplit(directory[1],"/")[[1]][2],sep="/")
 } else if (!is.null(argLs[["library"]])){
+	fileType="zip"
 	directory=argLs[["library"]]
     	if(!file.exists(directory)){
 		error_message=paste("Cannot access the directory :",directory,".Please verify if the directory exists or not.")
 		print(error_message)
 		stop(error_message)
 	}
+} else if (!is.null(argLs[["tsvfile"]])){
+	fileType="tsv"
+	directory <- read.table(argLs[["tsvfile"]],check.names=FALSE,header=TRUE,sep="\t")
 }
 
 
@@ -110,7 +115,7 @@ if(length(error.stock) > 1)
   
 ## Computation
 ##------------
-directory.alignement <- nmr.alignment(directory=directory,leftBorder=leftBorder,rightBorder=rightBorder,exclusionZones=exclusionZones,
+directory.alignement <- nmr.alignment(fileType=fileType,directory=directory,leftBorder=leftBorder,rightBorder=rightBorder,exclusionZones=exclusionZones,
                                   exclusionZonesBorders=exclusionZonesBorders, reference=reference, nDivRange=nDivRange, 
                                   baselineThresh=baselineThresh, maxshift=50, verbose=FALSE)
 directory.raw <- directory.alignement[[1]]

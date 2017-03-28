@@ -425,13 +425,43 @@ cluPA.alignment <- function(data, reference=reference, nDivRange, scales = seq(1
 #   - data.read: n x p matrix                                                                  #
 #   - data.aligned: n x p matrix                                                               #
 ################################################################################################
-nmr.alignment <- function(directory, leftBorder= 10.0, rightBorder= 0.5, exclusionZones=FALSE, 
+nmr.alignment <- function(fileType, directory, leftBorder= 10.0, rightBorder= 0.5, exclusionZones=FALSE, 
                           exclusionZonesBorders=NULL, reference=0, nDivRange=64, baselineThresh=50000, maxshift=50, verbose=FALSE)
 {
-  data.read <- NmrRead(directory=directory, leftBorder=leftBorder, rightBorder=rightBorder, exclusionZones=exclusionZones, exclusionZonesBorders=exclusionZonesBorders)
-  rownames(data.read) <- data.read[,1]
-  data.read <- data.read[,-1]
-  data.read <- t(data.read)
+  if (fileType=="zip")
+  {  
+	data.read <- NmrRead(directory=directory, leftBorder=leftBorder, rightBorder=rightBorder, exclusionZones=exclusionZones, exclusionZonesBorders=exclusionZonesBorders)
+	rownames(data.read) <- data.read[,1]
+	data.read <- data.read[,-1]
+	data.read <- t(data.read)
+  }
+  if (fileType=="tsv")
+  {
+    data.read <- t(directory)
+    ppm <- round(as.numeric(colnames(data.read)),2)
+
+    if (!is.null(exclusionZonesBorders))
+    {
+      excludedZone <- NULL
+      for (c in 1:length(exclusionZonesBorders))
+      {
+        excludedZone <- c(excludedZone,exclusionZonesBorders[[c]])
+        excludedZone <- sort(excludedZone)
+      }
+
+      nbZones <- length(excludedZone)/2
+      n <- length(excludedZone)
+      data <- data.read[,1:which(ppm == excludedZone[n])[1]]
+      n <- n - 1
+      while (n >= nbZones & nbZones > 1)
+      {
+        data <- cbind(data, data.read[,(which(ppm == excludedZone[n])[1]):(which(ppm == excludedZone[n-1])[1])])
+        n <- n - 2
+      }
+      data <- cbind(data, data.read[,(which(ppm == excludedZone[1])[1]):ncol(data.read)])
+      data.read <- data
+    }
+  }
   data.aligned <- cluPA.alignment(data=data.read, reference=reference, nDivRange=nDivRange, 
                                   baselineThresh=baselineThresh, maxshift=maxshift, verbose=verbose)
 
