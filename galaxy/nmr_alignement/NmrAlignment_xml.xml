@@ -1,4 +1,4 @@
-<tool id="NmrAlignment" name="NMR spectra alignment" version="2.0.2">
+<tool id="NmrAlignment" name="NMR spectra alignment" version="2.0.3">
     <description>based on the Cluster-based Peak Alignment (CluPA) algorithm</description>
      <requirements>
         <requirement type="package" version="1.1_4">r-batch</requirement>
@@ -85,6 +85,28 @@
         <data format="tabular" name="alignedSpectra" label="${tool.name}_alignedSpectra" />
         <data format="pdf" name="graphOut" label="${tool.name}_graph" />
     </outputs>
+
+    <tests>
+        <test>
+            <conditional name="inputs">
+                <param name="input" value="zip_file" />
+                <param name="zip_file" value="MTBLS1.zip" ftype="zip" />
+            </conditional>
+            <param name="left_border" value="9.3" />
+            <param name="right_border" value="0.2" />
+            <conditional name="zone_exclusion_choices">
+                <param name="choice" value="yes" />
+                <param name="conditions_0|zone_exclusion_left" value="6.0" />
+                <param name="conditions_0|zone_exclusion_right" value="4.24" />
+                <param name="conditions_1|zone_exclusion_left" value="4.0" />
+                <param name="conditions_1|zone_exclusion_right" value="3.2" />
+            </conditional>
+            <param name="reference" value="0" />
+            <param name="nDivRange" value="64" />
+            <param name="baselineThresh" value="0" />
+            <output name="alignedSpectra" value="MTBLS1_alignedSpectra.tabular" />
+        </test>
+    </tests>
 
     <help>
 
