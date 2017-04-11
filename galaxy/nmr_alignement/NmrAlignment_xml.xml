@@ -1,59 +1,55 @@
 <tool id="NmrAlignment" name="NMR spectra alignment" version="2.0.2">
-	<description>based on the Cluster-based Peak Alignment (CluPA) algorithm</description>
-	 <requirements>
-        <requirement type="package" version="3.1.2">R</requirement>
-	    <requirement type="package" version="1.1_4">r-batch</requirement>
-	    <requirement type="package" version="1.2.1">r-speaq</requirement>
-  	</requirements>
+    <description>based on the Cluster-based Peak Alignment (CluPA) algorithm</description>
+     <requirements>
+        <requirement type="package" version="1.1_4">r-batch</requirement>
+        <requirement type="package" version="1.2.1">r-speaq</requirement>
+      </requirements>
     <stdio>
         <exit_code range="1:" level="fatal" />
     </stdio>
-  	<command>
-		## Wrapper
+    <command>
+        ## Wrapper
         Rscript '$__tool_directory__/NmrAlignment_wrapper.R'
 
-		## File input
-        #if $inputs.input == "lib":
-            library '$__app__.config.user_library_import_dir/$__user_email__/$inputs.library'
-		#elif $inputs.input == "tsv_file":
+        ## File input
+        #if $inputs.input == "tsv_file":
             tsvfile $inputs.tsv_file
         #elif $inputs.input == "zip_file":
             zipfile '$inputs.zip_file'
         #end if
 
-		## Spectra borders
-		left_border $left_border
-		right_border $right_border
+        ## Spectra borders
+        left_border $left_border
+        right_border $right_border
 
-		## Exclusion zone
-		zone_exclusion_choices.choice ${zone_exclusion_choices.choice}
-		#if str($zone_exclusion_choices.choice) == 'yes':
-			#for $i in $zone_exclusion_choices.conditions:
-				zone_exclusion_left ${i.zone_exclusion_left}
-				zone_exclusion_right ${i.zone_exclusion_right}
-			#end for
-		#end if
+        ## Exclusion zone
+        zone_exclusion_choices.choice ${zone_exclusion_choices.choice}
+        #if str($zone_exclusion_choices.choice) == 'yes':
+            #for $i in $zone_exclusion_choices.conditions:
+                zone_exclusion_left ${i.zone_exclusion_left}
+                zone_exclusion_right ${i.zone_exclusion_right}
+            #end for
+        #end if
 
-		## Reference spectrum
-		reference $reference
+        ## Reference spectrum
+        reference $reference
 
-		## Segment size
-		nDivRange $nDivRange
+        ## Segment size
+        nDivRange $nDivRange
 
-		## Intensity threshold
-		baselineThresh $baselineThresh
+        ## Intensity threshold
+        baselineThresh $baselineThresh
 
-		## Outputs
-		logOut '$logOut'
-		alignedSpectra '$alignedSpectra'
-		graphOut '$graphOut'
-	</command>
-  	<inputs>
+        ## Outputs
+        logOut '$logOut'
+        alignedSpectra '$alignedSpectra'
+        graphOut '$graphOut'
+    </command>
+    <inputs>
         <conditional name="inputs">
             <param name="input" type="select" label="Choose your inputs method" >
                 <option value="zip_file" selected="true">Zip file from your history containing your Bruker directories</option>
                 <option value="tsv_file">Tsv file containing preprocessed spectra (from your history)</option>
-                <option value="lib" >Library directory name</option>
             </param>
             <when value="zip_file">
                 <param name="zip_file" type="data" format="no_unzip.zip" label="Zip file" />
@@ -61,41 +57,36 @@
             <when value="tsv_file">
                 <param name="tsv_file" type="data" format="tabular" label="Tsv file" />
             </when>
-            <when value="lib">
-                <param name="library" type="text" size="40" label="Library directory name" help="The name of your directory containing all your data" >
-                    <validator type="empty_field"/>
-                </param>
-            </when>
         </conditional>
 
-		<param name="left_border" label="Left Border" type="float" value="10.0" size="10" help="Default value is 10 ppm"/>
-		<param name="right_border" label="Right Border" type="float" value="0.5" size="10" help="Default value is 0.5 ppm"/>
+        <param name="left_border" label="Left Border" type="float" value="10.0" size="10" help="Default value is 10 ppm"/>
+        <param name="right_border" label="Right Border" type="float" value="0.5" size="10" help="Default value is 0.5 ppm"/>
 
-		<conditional name="zone_exclusion_choices">
-			<param name="choice" type="select" label="Exclusion zone(s)" help="Choose if you want to exclude particular zone(s)" >
-				<option value="yes" > yes </option>
-				<option value="no" selected="true"> no </option>
-			</param>
-			<when value="yes">
-				<repeat name="conditions" title="exclusion zones">
-					<param name="zone_exclusion_left" label="Left exclusion zone border" type="float" value="10.0" />
-					<param name="zone_exclusion_right" label="Right exclusion zone border" type="float" value="10.0" />
-				</repeat>
-			</when>
-      <when value="no" />
-		</conditional>
-		<param name="reference" type="integer" value="0" help="Number of the reference spectrum. Default value is 0: automatic determination of the reference spectrum" />
-		<param name="nDivRange" type="integer" value="64" help="Size of a single small segment after division of spectra. Default value is 64" />
-		<param name="baselineThresh" type="integer" value="1" help="Threshold to remove all peaks with intensity lower this value. Default value is 1" />
-	</inputs>
+        <conditional name="zone_exclusion_choices">
+            <param name="choice" type="select" label="Exclusion zone(s)" help="Choose if you want to exclude particular zone(s)" >
+                <option value="yes" > yes </option>
+                <option value="no" selected="true"> no </option>
+            </param>
+            <when value="yes">
+                <repeat name="conditions" title="exclusion zones">
+                    <param name="zone_exclusion_left" label="Left exclusion zone border" type="float" value="10.0" />
+                    <param name="zone_exclusion_right" label="Right exclusion zone border" type="float" value="10.0" />
+                </repeat>
+            </when>
+            <when value="no" />
+        </conditional>
+        <param name="reference" type="integer" value="0" help="Number of the reference spectrum. Default value is 0: automatic determination of the reference spectrum" />
+        <param name="nDivRange" type="integer" value="64" help="Size of a single small segment after division of spectra. Default value is 64" />
+        <param name="baselineThresh" type="integer" value="1" help="Threshold to remove all peaks with intensity lower this value. Default value is 1" />
+    </inputs>
 
-	<outputs>
-		<data format="txt" name="logOut" label="${tool.name}_log" />
-		<data format="tabular" name="alignedSpectra" label="${tool.name}_alignedSpectra" />
-		<data format="pdf" name="graphOut" label="${tool.name}_graph" />
-	</outputs>
+    <outputs>
+        <data format="txt" name="logOut" label="${tool.name}_log" />
+        <data format="tabular" name="alignedSpectra" label="${tool.name}_alignedSpectra" />
+        <data format="pdf" name="graphOut" label="${tool.name}_graph" />
+    </outputs>
 
-	<help>
+    <help>
 
 .. class:: infomark
 
@@ -177,49 +168,49 @@ Parameters
 ----------
 
 Bucket width
-	| size of windows
-	|
+    | size of windows
+    |
 
 Left limit
-	| Upper boundary: values greater than this value are not used in the bucketing. Default value is 10.0 ppm
-	|
+    | Upper boundary: values greater than this value are not used in the bucketing. Default value is 10.0 ppm
+    |
 
 Right limit
-	| Lower boundary: values lower than this value are not used in the bucketing. Default value is 0.5 ppm
-	|
+    | Lower boundary: values lower than this value are not used in the bucketing. Default value is 0.5 ppm
+    |
 
 Exclusion zone(s)
-	| Spectral regions to exclude, water, solvents, ... resonance
-	| If YES: parameters **Lower exclusion zone** and **Upper exclusion zone** are visible,
-	| If NO: no zone to exclude
-	| Default value is NO
-	|
+    | Spectral regions to exclude, water, solvents, ... resonance
+    | If YES: parameters **Lower exclusion zone** and **Upper exclusion zone** are visible,
+    | If NO: no zone to exclude
+    | Default value is NO
+    |
 
 Left exclusion zone
-	| Upper boundary of exclusion zone
-	|
+    | Upper boundary of exclusion zone
+    |
 
 Right exclusion zone
-	| Lower boundary of exclusion zone
+    | Lower boundary of exclusion zone
 
 | *Notes:*
 | - these parameters can be used several times using the "Add new exclusion zones" button
 |
 
 Reference spectrum
-	| spectrum to which other spectra are aligned
-	| Default value is 0: heuristic strategy to find the optimal template developped in the speaq package
-	|
+    | spectrum to which other spectra are aligned
+    | Default value is 0: heuristic strategy to find the optimal template developped in the speaq package
+    |
 
 Segment size
-	| Size of a single small segment after division of spectra
-	| Default value: 64 (minimal value adviced)
-	|
+    | Size of a single small segment after division of spectra
+    | Default value: 64 (minimal value adviced)
+    |
 
 Intensity threshold
-	| All peaks with an intensity below this threshold are removed
-	| Default value: 1
-	|
+    | All peaks with an intensity below this threshold are removed
+    | Default value: 1
+    |
 
 
 ------------
@@ -227,13 +218,13 @@ Output files
 ------------
 
 alignedSpectra.tsv
-	| tabular output
-	| Data matrix with p rows (ppm) and n columns (samples) containing the aligned intensities
-	|
+    | tabular output
+    | Data matrix with p rows (ppm) and n columns (samples) containing the aligned intensities
+    |
 
 graphOut.pdf
-	| pdf output
-	| Graphical chart of raw and aligned data: whole spectral width, "zoomed" zones depending on the exclusion zones, spectral zone between 2.8 and 2.4ppm corresponding to the citric acid
+    | pdf output
+    | Graphical chart of raw and aligned data: whole spectral width, "zoomed" zones depending on the exclusion zones, spectral zone between 2.8 and 2.4ppm corresponding to the citric acid
 
 
 ---------------------------------------------------
