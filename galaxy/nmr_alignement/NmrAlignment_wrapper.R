@@ -17,7 +17,7 @@ options(stringsAsFactors = FALSE)
 ## Libraries loading
 ##------------------------------
 	# ParseCommandArgs function
-library(batch) 
+library(batch)
 	# Alignment
 library(speaq)
 
@@ -51,29 +51,26 @@ flagC <- "\n"
 if(!runExampleL)
     argLs <- parseCommandArgs(evaluate=FALSE)
 
-	
+
 ## Parameters Loading
 ##-------------------
 	# Inputs
 		## Library of spectra to align
 if (!is.null(argLs[["zipfile"]])){
+	fileType="zip"
 	zipfile= argLs[["zipfile"]]
 	directory=unzip(zipfile, list=F)
 	directory=paste(getwd(),strsplit(directory[1],"/")[[1]][2],sep="/")
-} else if (!is.null(argLs[["library"]])){
-	directory=argLs[["library"]]
-    	if(!file.exists(directory)){
-		error_message=paste("Cannot access the directory :",directory,".Please verify if the directory exists or not.")
-		print(error_message)
-		stop(error_message)
-	}
+} else if (!is.null(argLs[["tsvfile"]])){
+	fileType="tsv"
+	directory <- read.table(argLs[["tsvfile"]],check.names=FALSE,header=TRUE,sep="\t")
 }
 
 
 		## Spectral width
 leftBorder <- argLs[["left_border"]]
 rightBorder <- argLs[["right_border"]]
-		
+
 		##Exclusion zone(s)
 exclusionZones <- argLs[["zone_exclusion_choices.choice"]]
 exclusionZonesBorders <- NULL
@@ -84,13 +81,13 @@ if (!is.null(argLs$zone_exclusion_left))
      exclusionZonesBorders <- c(exclusionZonesBorders,list(c(argLs[[i]],argLs[[i+1]])))
    }
 }
-		
+
 		## Reference spectrum
 reference <- argLs[["reference"]]
 
 		## Size of a small nDivRange
 nDivRange <- argLs[["nDivRange"]]
-		
+
 		## Intensity threshold for peak removal
 baselineThresh <- argLs[["baselineThresh"]]
 
@@ -106,12 +103,12 @@ graphOut <- argLs[["graphOut"]]
 error.stock <- "\n"
 if(length(error.stock) > 1)
   stop(error.stock)
-  
-  
+
+
 ## Computation
 ##------------
-directory.alignement <- nmr.alignment(directory=directory,leftBorder=leftBorder,rightBorder=rightBorder,exclusionZones=exclusionZones,
-                                  exclusionZonesBorders=exclusionZonesBorders, reference=reference, nDivRange=nDivRange, 
+directory.alignement <- nmr.alignment(fileType=fileType,directory=directory,leftBorder=leftBorder,rightBorder=rightBorder,exclusionZones=exclusionZones,
+                                  exclusionZonesBorders=exclusionZonesBorders, reference=reference, nDivRange=nDivRange,
                                   baselineThresh=baselineThresh, maxshift=50, verbose=FALSE)
 directory.raw <- directory.alignement[[1]]
 directory.aligned <- directory.alignement[[2]]
@@ -122,7 +119,7 @@ directory.aligned <- directory.alignement[[2]]
 t.directory.aligned <- t(directory.aligned)
 rownames(t.directory.aligned) <- colnames(directory.aligned)
 # colnames(t.directory.aligned) <- c("Bucket",colnames(t.directory.aligned))
-write.table(t.directory.aligned,file=alignedSpectra,row.names=TRUE,quote=FALSE,sep="\t") 
+write.table(t.directory.aligned,file=alignedSpectra,row.names=TRUE,quote=FALSE,sep="\t")
 
 
 excludedZone <- NULL
@@ -159,7 +156,7 @@ if (nbZones != 0)
     drawSpec(aligned.spectra[,(which(round(as.numeric(colnames(aligned.spectra)),2) == excludedZone[n])[1]):(which(round(as.numeric(colnames(aligned.spectra)),2) == excludedZone[n-1])[1])],xlab="", ylab="Aligned spectra", main="")
     n <- n - 2
   }
-  
+
   drawSpec(raw.spectra[,(which(round(as.numeric(colnames(raw.spectra)),2) == excludedZone[1])[1]):ncol(raw.spectra)],xlab="", ylab="Raw spectra", main="")
   drawSpec(aligned.spectra[,(which(round(as.numeric(colnames(aligned.spectra)),2) == excludedZone[1])[1]):ncol(aligned.spectra)],xlab="", ylab="Aligned spectra", main="")
 }
