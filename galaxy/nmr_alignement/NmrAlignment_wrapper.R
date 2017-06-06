@@ -98,6 +98,17 @@ alignedSpectra <- argLs[["alignedSpectra"]]
 graphOut <- argLs[["graphOut"]]
 
 
+## Checking R packages
+##--------------------
+sink(logOut)
+cat("\tPACKAGE INFO\n")
+#pkgs=c("xcms","batch")
+pkgs=c("batch","speaq")
+for(pkg in pkgs) {
+    suppressPackageStartupMessages( stopifnot( library(pkg, quietly=TRUE, logical.return=TRUE, character.only=TRUE)))
+    cat(pkg,"\t",as.character(packageVersion(pkg)),"\n",sep="")
+}
+
 ## Checking arguments
 ##-------------------
 error.stock <- "\n"
@@ -169,5 +180,6 @@ dev.off()
 ## Ending
 ##---------------------
 cat("\nEnd of 'NMR alignment' Galaxy module call: ", as.character(Sys.time()), sep = "")
+sink()
 options(stringsAsFactors = strAsFacL)
 rm(list = ls())
