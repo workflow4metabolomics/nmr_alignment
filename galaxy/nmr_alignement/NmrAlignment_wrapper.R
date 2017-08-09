@@ -71,7 +71,7 @@ if (!is.null(argLs[["zipfile"]])){
 leftBorder <- argLs[["left_border"]]
 rightBorder <- argLs[["right_border"]]
 
-		##Exclusion zone(s)
+		## Exclusion zone(s)
 exclusionZones <- argLs[["zone_exclusion_choices.choice"]]
 exclusionZonesBorders <- NULL
 if (!is.null(argLs$zone_exclusion_left))
@@ -90,6 +90,17 @@ nDivRange <- argLs[["nDivRange"]]
 
 		## Intensity threshold for peak removal
 baselineThresh <- argLs[["baselineThresh"]]
+
+  ## Graphical zone(s)
+graphicalZones <- argLs[["zone_graphical_choices.choice"]]
+graphicalZonesBorders <- NULL
+if (!is.null(argLs$zone_exclusion_left))
+{
+  for(i in which(names(argLs)=="zone_graphical_left"))
+  {
+    graphicalZonesBorders <- c(graphicalZonesBorders,list(c(argLs[[i]],argLs[[i+1]])))
+  }
+}
 
 
 	# Outputs
@@ -133,15 +144,10 @@ rownames(t.directory.aligned) <- colnames(directory.aligned)
 write.table(t.directory.aligned,file=alignedSpectra,row.names=TRUE,quote=FALSE,sep="\t")
 
 
-excludedZone <- NULL
-for (c in 1:length(exclusionZonesBorders))
-{
-  excludedZone <- c(excludedZone,exclusionZonesBorders[[c]])
-  excludedZone <- sort(excludedZone)
-}
-
 ## Graphical output: overlay of raw and estimated spectra
 pdf(graphOut,onefile=TRUE)
+
+graphical.zone.length <- length(graphicalZonesBorders)
 par(mfrow=c(2,1))
 
 raw.spectra <- data.frame(directory.raw)
@@ -153,27 +159,16 @@ colnames(aligned.spectra) <- substr(colnames(aligned.spectra),2,7)
 drawSpec(raw.spectra,xlab="", ylab="Raw spectra", main="")
 drawSpec(aligned.spectra,xlab="", ylab="Aligned spectra", main="")
 
-nbZones <- length(excludedZone)/2
-if (nbZones != 0)
+if (graphical.zone.length != 0)
 {
-  n <- length(excludedZone)
-  drawSpec(raw.spectra[,1:which(round(as.numeric(colnames(raw.spectra)),2) == excludedZone[n])[1]],xlab="", ylab="Raw spectra", main="")
-  drawSpec(aligned.spectra[,1:which(round(as.numeric(colnames(aligned.spectra)),2) == excludedZone[n])[1]],xlab="", ylab="Aligned spectra", main="")
-
-  n <- n - 1
-  while (n >= nbZones & nbZones > 1)
+  #   par(mfrow=c(2,1))
+  for (g in 1:graphical.zone.length)
   {
-    drawSpec(raw.spectra[,(which(round(as.numeric(colnames(raw.spectra)),2) == excludedZone[n])[1]):(which(round(as.numeric(colnames(raw.spectra)),2) == excludedZone[n-1])[1])],xlab="", ylab="Raw spectra", main="")
-    drawSpec(aligned.spectra[,(which(round(as.numeric(colnames(aligned.spectra)),2) == excludedZone[n])[1]):(which(round(as.numeric(colnames(aligned.spectra)),2) == excludedZone[n-1])[1])],xlab="", ylab="Aligned spectra", main="")
-    n <- n - 2
+    print(paste(g, graphicalZonesBorders[[g]][1], graphicalZonesBorders[[g]][2]))
+    drawSpec(raw.spectra[,(which(round(as.numeric(colnames(raw.spectra)),2) == graphicalZonesBorders[[g]][1])[1]):(which(round(as.numeric(colnames(raw.spectra)),2) == graphicalZonesBorders[[g]][2])[1])],xlab="", main="")
+    drawSpec(aligned.spectra[,(which(round(as.numeric(colnames(aligned.spectra)),2) == graphicalZonesBorders[[g]][1])[1]):(which(round(as.numeric(colnames(aligned.spectra)),2) == graphicalZonesBorders[[g]][2])[1])],xlab="", main="")
   }
-
-  drawSpec(raw.spectra[,(which(round(as.numeric(colnames(raw.spectra)),2) == excludedZone[1])[1]):ncol(raw.spectra)],xlab="", ylab="Raw spectra", main="")
-  drawSpec(aligned.spectra[,(which(round(as.numeric(colnames(aligned.spectra)),2) == excludedZone[1])[1]):ncol(aligned.spectra)],xlab="", ylab="Aligned spectra", main="")
 }
-drawSpec(raw.spectra[,(which(round(as.numeric(colnames(raw.spectra)),2) == 2.4)[1]):(which(round(as.numeric(colnames(raw.spectra)),2) == 2.8)[1])],xlab="", ylab="Raw spectra", main="")
-drawSpec(aligned.spectra[,(which(round(as.numeric(colnames(aligned.spectra)),2) == 2.4)[1]):(which(round(as.numeric(colnames(aligned.spectra)),2) == 2.8)[1])],xlab="", ylab="Aligned spectra", main="")
-
 dev.off()
 
 
