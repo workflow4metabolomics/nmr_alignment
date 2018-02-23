@@ -204,6 +204,7 @@ detectSpecPeaks <- function (X, nDivRange, scales=seq(1, 16, 2), baselineThresh,
       cat("\n Spectrum ", i, " has ", length(pList[[i]]), 
           " peaks")
   }
+  cat("\n")
   return(pList)
 }
 
@@ -368,35 +369,40 @@ cluPA.alignment <- function(data, reference=reference, nDivRange, scales = seq(1
                             verbose)
 {
   ## Peak picking
-  cat("\n detect peaks....")
+  cat("\t PEAK DETECTION \n")
   startTime <- proc.time()
   peakList <- detectSpecPeaks(X=data, nDivRange=nDivRange, scales=scales, baselineThresh=baselineThresh,  
                               SNR.Th = SNR.Th, verbose=verbose)
   endTime <- proc.time()
-  cat("Peak detection time:",(endTime[3]-startTime[3])/60," minutes")
+  cat("\t Peak detection time:",(endTime[3]-startTime[3])/60," minutes \n")
+  cat("\n")
 
   ## Reference spectrum determination
   if (reference == 0)
   {
-    cat("\n Find the spectrum reference...")
+    cat("\t DETERMINATION OF THE REFERENCE SPECTRUM \n")
     resFindRef<- findRef(peakList)
     refInd <- resFindRef$refInd
-    cat("\n Order of spectrum for reference \n")
+    cat("\t Order of spectrum for reference \n")
     for (i in 1:length(resFindRef$orderSpec))
     {
       cat(paste(i, ":",resFindRef$orderSpec[i],sep=""), " ")
       if (i %% 10 == 0) 
         cat("\n")
     }
-    cat("\n The reference is: ", refInd)
+	cat("\n")
+	cat("\t Reference spectrum:", refInd)
+    cat("\n")
   }
   else
   {
     refInd=reference
   }
   ## Spectra alignment to the reference
+  cat("\t SPECTRA ALIGNMENT \n")
   maxshift <- 50
   Y <- dohCluster(data, peakList=peakList, refInd=refInd, maxShift=maxShift, acceptLostPeak, verbose)
+  cat("\n")
 
   ## Output  
   return(Y)

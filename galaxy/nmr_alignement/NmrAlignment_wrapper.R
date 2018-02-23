@@ -108,6 +108,8 @@ for(pkg in pkgs) {
     suppressPackageStartupMessages( stopifnot( library(pkg, quietly=TRUE, logical.return=TRUE, character.only=TRUE)))
     cat(pkg,"\t",as.character(packageVersion(pkg)),"\n",sep="")
 }
+cat("\n")
+
 
 ## Checking arguments
 ##-------------------
@@ -120,7 +122,7 @@ if(length(error.stock) > 1)
 ##------------
 directory.alignement <- nmr.alignment(fileType=fileType,directory=directory,leftBorder=leftBorder,rightBorder=rightBorder,exclusionZones=exclusionZones,
                                   exclusionZonesBorders=exclusionZonesBorders, reference=reference, nDivRange=nDivRange,
-                                  baselineThresh=baselineThresh, maxshift=50, verbose=FALSE)
+                                  baselineThresh=baselineThresh, maxshift=50, verbose=TRUE)
 directory.raw <- directory.alignement[[1]]
 directory.aligned <- directory.alignement[[2]]
 
@@ -174,7 +176,7 @@ if (nbZones != 0)
 drawSpec(raw.spectra[,(which(round(as.numeric(colnames(raw.spectra)),2) == 2.4)[1]):(which(round(as.numeric(colnames(raw.spectra)),2) == 2.8)[1])],xlab="", ylab="Raw spectra", main="")
 drawSpec(aligned.spectra[,(which(round(as.numeric(colnames(aligned.spectra)),2) == 2.4)[1]):(which(round(as.numeric(colnames(aligned.spectra)),2) == 2.8)[1])],xlab="", ylab="Aligned spectra", main="")
 
-dev.off()
+invisible(dev.off())
 
 
 ## Ending
