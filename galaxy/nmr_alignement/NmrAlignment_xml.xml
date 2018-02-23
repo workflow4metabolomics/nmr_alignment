@@ -1,4 +1,4 @@
-<tool id="NmrAlignment" name="NMR spectra alignment" version="2.0.3">
+<tool id="NmrAlignment" name="NMR spectra alignment" version="2.0.4">
     <description>based on the Cluster-based Peak Alignment (CluPA) algorithm</description>
      <requirements>
         <requirement type="package" version="1.1_4">r-batch</requirement>
@@ -40,6 +40,15 @@
         ## Intensity threshold
         baselineThresh $baselineThresh
 
+		## Graphical zone
+        zone_graphical_choices.choice ${zone_graphical_choices.choice}
+        #if str($zone_graphical_choices.choice) == 'yes':
+            #for $i in $zone_graphical_choices.conditions:
+                zone_graphical_left ${i.zone_graphical_left}
+                zone_graphical_right ${i.zone_graphical_right}
+            #end for
+        #end if
+
         ## Outputs
         logOut '$logOut'
         alignedSpectra '$alignedSpectra'
@@ -75,9 +84,24 @@
             </when>
             <when value="no" />
         </conditional>
+		
         <param name="reference" type="integer" value="0" help="Number of the reference spectrum. Default value is 0: automatic determination of the reference spectrum" />
         <param name="nDivRange" type="integer" value="64" help="Size of a single small segment after division of spectra. Default value is 64" />
         <param name="baselineThresh" type="integer" value="1" help="Threshold to remove all peaks with intensity lower this value. Default value is 1" />
+		
+		<conditional name="zone_graphical_choices">
+            <param name="choice" type="select" label="Graphical zone(s)" help="Choose if you want to display particular zone(s)" >
+                <option value="yes" > yes </option>
+                <option value="no" selected="true"> no </option>
+            </param>
+            <when value="yes">
+                <repeat name="conditions" title="grapical zones">
+                    <param name="zone_graphical_left" label="Left graphical zone border" type="float" value="10.0" />
+                    <param name="zone_graphical_right" label="Right graphical zone border" type="float" value="10.0" />
+                </repeat>
+            </when>
+            <when value="no" />
+        </conditional>
     </inputs>
 
     <outputs>
@@ -104,6 +128,13 @@
             <param name="reference" value="0" />
             <param name="nDivRange" value="64" />
             <param name="baselineThresh" value="0" />
+            <conditional name="zone_graphical_choices">
+                <param name="choice" value="yes" />
+                <param name="conditions_0|zone_graphical_left" value="4.2" />
+                <param name="conditions_0|zone_graphical_right" value="4.0" />
+                <param name="conditions_1|zone_graphical_left" value="2.8" />
+                <param name="conditions_1|zone_graphical_right" value="2.4" />
+            </conditional>       
             <output name="alignedSpectra" value="MTBLS1_alignedSpectra.tabular" />
         </test>
     </tests>
@@ -232,6 +263,13 @@ Segment size
 Intensity threshold
     | All peaks with an intensity below this threshold are removed
     | Default value: 1
+    |
+
+Graphical zone(s)
+    | Spectral regions to display
+    | If YES: parameters **Lower graphical zone** and **Upper graphical zone** are visible,
+    | If NO: no zone to display
+    | Default value is NO
     |
 
 
